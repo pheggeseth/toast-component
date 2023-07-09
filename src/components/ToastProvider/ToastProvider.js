@@ -11,10 +11,12 @@ function ToastProvider({ children }) {
       id,
       message,
       variant,
-      dismiss: () =>
-        setToasts((prev) => prev.filter((toast) => toast.id !== id)),
     };
     setToasts((prev) => [...prev, newToast]);
+  }
+
+  function dismissToast(id) {
+    setToasts((prev) => prev.filter((toast) => toast.id !== id));
   }
 
   React.useEffect(() => {
@@ -31,7 +33,10 @@ function ToastProvider({ children }) {
     };
   }, [toasts.length]);
 
-  const value = React.useMemo(() => [toasts, { addToast }], [toasts]);
+  const value = React.useMemo(
+    () => [toasts, { addToast, dismissToast }],
+    [toasts]
+  );
 
   return (
     <ToastContext.Provider value={value}>{children}</ToastContext.Provider>
