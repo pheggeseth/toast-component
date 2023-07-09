@@ -3,7 +3,7 @@ import React from "react";
 export const ToastContext = React.createContext();
 
 function ToastProvider({ children }) {
-  const [toasts, setVisibleToasts] = React.useState([]);
+  const [toasts, setToasts] = React.useState([]);
 
   function addToast(message, variant) {
     const id = Math.random();
@@ -12,10 +12,24 @@ function ToastProvider({ children }) {
       message,
       variant,
       dismiss: () =>
-        setVisibleToasts((prev) => prev.filter((toast) => toast.id !== id)),
+        setToasts((prev) => prev.filter((toast) => toast.id !== id)),
     };
-    setVisibleToasts((prev) => [...prev, newToast]);
+    setToasts((prev) => [...prev, newToast]);
   }
+
+  React.useEffect(() => {
+    function onKeyDown(event) {
+      if (event.key === "Escape" && toasts.length > 0) {
+        setToasts([]);
+      }
+    }
+
+    window.addEventListener("keydown", onKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [toasts.length]);
 
   const value = React.useMemo(() => [toasts, { addToast }], [toasts]);
 
